@@ -1,0 +1,16 @@
+name: 'Whiplash Heroku Review App Deploy'
+description: 'Composite action to help Whiplash review app deployment. It will deploy 2 Review App that has dependency between them. For example a backend API and the UI. '
+inputs:
+  github-pat:  # id of input
+    description: 'Github access token'
+    required: true
+    default: ''
+outputs:
+  random-number:
+    description: "Random number"
+    value: ${{ steps.random-number-generator.outputs.random-number }}
+runs:
+  using: "composite"
+  steps:
+    - run: |
+          write-output Hello ${{ inputs.github-pat }}
