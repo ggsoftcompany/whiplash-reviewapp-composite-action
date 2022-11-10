@@ -3,7 +3,10 @@
     [string]$workingDirectoryPath = "lola",
 
     [Parameter(Mandatory=$true)]
-    [string]$herokuApiKey
+    [string]$herokuApiKey,
+
+    [Parameter(Mandatory=$true)]
+    [string]$targetHerokuPipelineName
 )
 
 

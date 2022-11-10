@@ -6,7 +6,11 @@ inputs:
     required: true
     default: ''
   heroku_apiKey: # id of input
-    description: 'Heroku API access token'
+    description: 'HEROKU API access token'
+    required: true
+    default: ''
+  heroku_targetPipelineName: # id of input
+    description: 'The name of the target pipeline in HEROKU'
     required: true
     default: ''
 outputs:
@@ -16,5 +20,8 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - run: ${{ github.action_path }}/scripts/primary-reviewapp-creation.ps1 -workingDirectoryPath '${{inputs.github_accessToken}}' -herokuApiKey ${{inputs.heroku_apiKey}}
+    - run: ${{ github.action_path }}/scripts/primary-reviewapp-creation.ps1 `
+              -workingDirectoryPath '${{inputs.github_accessToken}}' `
+              -herokuApiKey '${{inputs.heroku_apiKey}}'
+              -targetHerokuPipelineName '${{inputs.heroku_targetPipelineName}}'
       shell: powershell
