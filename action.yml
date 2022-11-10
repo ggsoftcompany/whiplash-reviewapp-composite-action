@@ -1,8 +1,12 @@
 name: 'Whiplash Heroku Review App Deploy'
 description: 'Composite action to help Whiplash review app deployment. It will deploy 2 Review App that has dependency between them. For example a backend API and the UI. '
 inputs:
-  github-pat:  # id of input
+  github_accessToken:  # id of input
     description: 'Github access token'
+    required: true
+    default: ''
+  heroku_apiKey: # id of input
+    description: 'Heroku API access token'
     required: true
     default: ''
 outputs:
@@ -12,5 +16,5 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - run: ${{ github.action_path }}/scripts/primary-reviewapp-creation.ps1 -workingDirectoryPath '${{inputs.github-pat}}'
+    - run: ${{ github.action_path }}/scripts/primary-reviewapp-creation.ps1 -workingDirectoryPath '${{inputs.github_accessToken}}' -herokuApiKey ${{inputs.heroku_apiKey}}
       shell: powershell
