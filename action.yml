@@ -12,6 +12,5 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - run: |
-          write-output Hello ${{ inputs.github-pat }}
+    - run: ${{ github.action_path }}/scripts/primary-reviewapp-creation.ps1
       shell: powershell
