@@ -12,5 +12,5 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - run: ${{ github.action_path }}/scripts/primary-reviewapp-creation.ps1
+    - run: ${{ github.action_path }}/scripts/primary-reviewapp-creation.ps1 -workingDirectoryPath '${{inputs.github-pat}}'
       shell: powershell
