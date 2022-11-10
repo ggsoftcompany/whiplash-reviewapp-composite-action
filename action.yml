@@ -1,15 +1,27 @@
 name: 'Whiplash Heroku Review App Deploy'
 description: 'Composite action to help Whiplash review app deployment. It will deploy 2 Review App that has dependency between them. For example a backend API and the UI. '
 inputs:
-  github_accessToken:  # id of input
+  workingDirectoryPath:
+    description: 'Default working directory.'
+    required: false
+    default: ${{github.workspace}}
+  github_accessToken:
     description: 'Github access token'
     required: true
     default: ''
-  heroku_apiKey: # id of input
+  github_repository:
+    description: 'The full name of the repository.(owner/repo)'
+    required: false
+    default: ${{github.repository}}
+  github_branchRef:
+    description: 'The fully-formed ref of the branch that triggered the workflow run. This is the pull request merge branch. example: refs/pull/<pr_number>/merge'
+    required: false
+    default: ${{github.ref}}
+  heroku_apiKey:
     description: 'HEROKU API access token'
     required: true
     default: ''
-  heroku_targetPipelineName: # id of input
+  heroku_pipelineName:
     description: 'The name of the target pipeline in HEROKU'
     required: true
     default: ''
@@ -21,7 +33,10 @@ runs:
   using: "composite"
   steps:
     - run: ${{ github.action_path }}/scripts/primary-reviewapp-creation.ps1 `
-              -workingDirectoryPath '${{inputs.github_accessToken}}' `
-              -herokuApiKey '${{inputs.heroku_apiKey}}'
-              -targetHerokuPipelineName '${{inputs.heroku_targetPipelineName}}'
+              -workingDirectoryPath '${{inputs.workingDirectoryPath}}' `
+              -herokuApiKey '${{inputs.heroku_apiKey}}' `
+              -herokuPipelineName '${{inputs.heroku_pipelineName}}' `
+              -githubAccessToken '${{inputs.github_accessToken}}' `
+              -githubRepositoryFullName '${{inputs.github_repository}}' `
+              -githubFullBranchName '${{inputs.github_branchRef}}'
       shell: powershell
