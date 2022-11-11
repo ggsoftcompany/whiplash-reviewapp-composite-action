@@ -66,9 +66,8 @@ git push origin $targetBranchName
 Write-Output "Branch: '$targetBranchName' Created."
 
 # set variable secondaryReviewAppSourceVersion to the sha of the las commit to the target branch which is the branch we just created
-$shaResult = @(git rev-parse origen $targetBranchName)
-$shaResult
-$secondaryReviewAppSourceVersion = $shaResult[0]
+$secondaryReviewAppSourceVersion = @(git rev-parse origin $targetBranchName)
+$secondaryReviewAppSourceVersion
 
 Write-Output "*************************************************"
 
