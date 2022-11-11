@@ -44,12 +44,12 @@ $branchName = $githubFullBranchName.Replace("refs/", "").trim()
 # set a variable with the projected URL for the Primary review App.
 # this variable will be used in post scripts
 $reviewAppURL = "https://$reviewAppPrefixURL-pr-$pullRequestNumber.herokuapp.com"
-echo "::set-output name=reviewapp_URL::$reviewAppURL"
+$reviewAppURL | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
 
 # set a variable with the projected URL for the Secondary(secondary) review App.
 $secondaryReviewAppTargetBranchName = [string]::Format("{0}{1}", $secondaryReviewAppNewBranchPrefix, $pullRequestNumber)
 $secondaryReviewAppURL = "https://$secondaryReviewAppPrefixURL-br-$secondaryReviewAppTargetBranchName.herokuapp.com"
-echo "::set-output name=secondaryReviewapp_URL::$secondaryReviewAppURL"
+$secondaryReviewAppURL | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
 
 return
 # heroku request header definition
