@@ -67,5 +67,5 @@ runs:
               -reviewAppPrefixURL '${{inputs.reviewapp_prefixURL}}' `
               -reviewAppEnvironmentValues '${{inputs.reviewapp_environmentValues}}' `
               -secondaryReviewAppPrefixURL '${{inputs.secondaryReviewapp_prefixURL}}' `
-              -secondaryReviewAppNewBranchPrefix '${{inputs.secondaryReviewapp_newBranchPrefix}}' `
+              -secondaryReviewAppNewBranchPrefix '${{inputs.secondaryReviewapp_newBranchPrefix}}'
       shell: powershell
