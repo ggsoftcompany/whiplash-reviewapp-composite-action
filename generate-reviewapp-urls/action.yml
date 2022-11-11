@@ -1,10 +1,6 @@
 name: 'Whiplash Heroku Generate Review App URLs'
 description: 'Composite action that will generate the URLs of the primary and secondary review apps.'
 inputs:
-  workingDirectoryPath:
-    description: 'Default working directory.'
-    required: false
-    default: ${{github.workspace}}
   github_pullRequestNumber:
     description: 'Pull request number'
     required: false
@@ -24,16 +20,17 @@ inputs:
 outputs:
   reviewapp_URL:
     description: "The URL of the primary Review App"
-    value: ${{ steps.step1.outputs.reviewapp_URL }}
+    value: ${{ steps.generate-urls.outputs.reviewapp_URL }}
   secondaryReviewapp_URL:
     description: "The URL of the secondary Review App"
-    value: ${{ steps.step2.secondaryReviewapp_URL }}
+    value: ${{ steps.generate-urls.secondaryReviewapp_URL }}
 runs:
   using: "composite"
   steps:
-    - id: step1
-      shell: pwsh
-      run: echo "reviewapp_URL=hello" >> $GITHUB_OUTPUT
-    - id: step2
-      shell: pwsh
-      run: echo "secondaryReviewapp_URL=world" >> $GITHUB_OUTPUT
+    - id: generate-urls
+      shell: powershell
+      run: ${{ github.action_path }}/scripts/main.ps1 `
+          - pullRequestNumber '${{inputs.github_pullRequestNumber}}' `
+          - reviewappPrefixURL '${{inputs.reviewapp_prefixURL}}' `
+          - secondaryReviewappPrefixURL '${{inputs.secondaryReviewapp_prefixURL}}' `
+          - secondaryReviewappNewBranchPrefix '${{inputs.secondaryReviewapp_newBranchPrefix}}' `
