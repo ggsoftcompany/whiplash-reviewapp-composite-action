@@ -18,7 +18,7 @@ inputs:
     required: false
     default: ${{github.ref}}
   github_pullRequestNumber:
-    description: 'The '
+    description: 'Pull request number'
     required: false
     default: ${{github.event.number}}
   heroku_apiKey:

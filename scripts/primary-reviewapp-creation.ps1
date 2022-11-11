@@ -43,7 +43,7 @@ $branchName = $githubFullBranchName.Replace("refs/", "").trim()
 
 # set a variable with the projected URL for the Primary review App.
 # this variable will be used in post scripts
-$reviewAppURL = "https://$reviewAppURLPrefix-pr-$pullRequestNumber.herokuapp.com"
+$reviewAppURL = "https://$reviewAppPrefixURL-pr-$pullRequestNumber.herokuapp.com"
 echo "reviewapp_URL=$($reviewAppURL)"
 
 # set a variable with the projected URL for the Secondary(secondary) review App.
