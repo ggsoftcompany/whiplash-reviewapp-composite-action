@@ -72,7 +72,7 @@ runs:
   using: "composite"
   steps:
     - id: create-reviewapp
-      run: ${{ github.action_path }}/scripts/primary-reviewapp-creation.ps1 `
+      run: ${{ github.action_path }}/scripts/create.ps1 `
               -workingDirectoryPath '${{inputs.workingDirectoryPath}}' `
               -herokuApiKey '${{inputs.heroku_apiKey}}' `
               -herokuPipelineName '${{inputs.heroku_pipelineName}}' `
@@ -87,7 +87,7 @@ runs:
       shell: powershell
 
     - id: create-secondary-reviewapp
-      run: ${{ github.action_path }}/scripts/secondary-reviewapp-creation.ps1 `
+      run: ${{ github.action_path }}/scripts/create.ps1 `
               -workingDirectoryPath '${{inputs.workingDirectoryPath}}' `
               -herokuApiKey '${{inputs.heroku_apiKey}}' `
               -herokuPipelineName '${{inputs.secondaryHeroku_pipelineName}}' `

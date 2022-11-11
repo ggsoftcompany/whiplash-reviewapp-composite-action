@@ -64,11 +64,8 @@ Write-Output "Creating branch: '$targetBranchName' ..."
 git checkout -b $targetBranchName -f
 git push origin $targetBranchName
 Write-Output "Branch: '$targetBranchName' Created."
-
 # set variable secondaryReviewAppSourceVersion to the sha of the las commit to the target branch which is the branch we just created
 $secondaryReviewAppSourceVersion = @(git rev-parse origin $targetBranchName)
-$secondaryReviewAppSourceVersion
-
 Write-Output "*************************************************"
 
 # heroku request header definition

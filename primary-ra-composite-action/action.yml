@@ -1,0 +1,64 @@
+name: 'Whiplash Heroku Primary Review App Deploy'
+description: 'Composite action to help Whiplash review app deployment. It will deploy the primary Review App.'
+inputs:
+  workingDirectoryPath:
+    description: 'Default working directory.'
+    required: false
+    default: ${{github.workspace}}
+  github_accessToken:
+    description: 'Github access token'
+    required: false
+    default: ${{secrets.GITHUB_TOKEN}}
+  github_repository:
+    description: 'The full name of the repository.(owner/repo)'
+    required: false
+    default: ${{github.repository}}
+  github_branchRef:
+    description: 'The fully-formed ref of the branch that triggered the workflow run. This is the pull request merge branch. example: refs/pull/<pr_number>/merge'
+    required: false
+    default: ${{github.ref}}
+  github_pullRequestNumber:
+    description: 'Pull request number'
+    required: false
+    default: ${{github.event.number}}
+  heroku_apiKey:
+    description: 'HEROKU API access token'
+    required: true
+    default: ''
+  heroku_pipelineName:
+    description: 'The name of the target pipeline in HEROKU'
+    required: true
+    default: ''
+  reviewapp_URL:
+    description: 'The URL of the primary Review App'
+    required: true
+    default: ''
+  reviewapp_version:
+    description: 'Source code version for the review app. Default to the version number (or SHA) of the code to build.'
+    required: false
+    default: ${{github.sha}}
+  reviewapp_environmentValues:
+    description: 'JSON string with environment values to include in the configuration of the primary Review APP. (Optional)'
+    required: false
+    default: ''
+  secondaryReviewapp_URL:
+    description: 'The URL of the secondary Review App'
+    required: true
+    default: ''
+runs:
+  using: "composite"
+  steps:
+    - id: create-reviewapp
+      run: ${{ github.action_path }}/scripts/create.ps1 `
+              -workingDirectoryPath '${{inputs.workingDirectoryPath}}' `
+              -herokuApiKey '${{inputs.heroku_apiKey}}' `
+              -herokuPipelineName '${{inputs.heroku_pipelineName}}' `
+              -githubAccessToken '${{inputs.github_accessToken}}' `
+              -githubRepositoryFullName '${{inputs.github_repository}}' `
+              -githubFullBranchName '${{inputs.github_branchRef}}' `
+              -pullRequestNumber '${{inputs.github_pullRequestNumber}}' `
+              -sourceCodeVersion '${{inputs.reviewapp_version}}' `
+              -reviewAppURL '${{inputs.reviewapp_URL}}' `
+              -environmentValues '${{inputs.reviewapp_environmentValues}}' `
+              -secondaryReviewAppURL '${{inputs.secondaryReviewapp_URL}}'
+      shell: powershell

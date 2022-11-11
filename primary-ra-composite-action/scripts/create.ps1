@@ -15,43 +15,41 @@
     [string]$githubFullBranchName,
 
     [Parameter(Mandatory=$true)]
+    [string]$pullRequestNumber,
+
+    [Parameter(Mandatory=$true)]
     [string]$sourceCodeVersion,
 
     [Parameter(Mandatory=$true)]
     [string]$herokuPipelineName,
 
     [Parameter(Mandatory=$true)]
-    [string]$reviewAppPrefixURL,
+    [string]$reviewAppURL,
 
     [Parameter(Mandatory=$false)]
-    [string]$reviewAppEnvironmentValues = "",
+    [string]$environmentValues = "",
 
     [Parameter(Mandatory=$true)]
-    [string]$secondaryReviewAppPrefixURL,
-
-    [Parameter(Mandatory=$true)]
-    [string]$secondaryReviewAppNewBranchPrefix
+    [string]$secondaryReviewAppURL
 )
 
 Write-Output "====  Beginning - Script of the Primary HEROKU Review APP  ==="
 
 # variables
 $herokuApiBaseURL = "https://api.heroku.com"
-$pullRequestNumber = $githubFullBranchName.Replace("refs/pull/", "").Replace("/merge", "").trim()
 $branchName = $githubFullBranchName.Replace("refs/", "").trim()
 
 
 # set a variable with the projected URL for the Primary review App.
 # this variable will be used in post scripts
-$reviewAppURL = "https://$reviewAppPrefixURL-pr-$pullRequestNumber.herokuapp.com"
-echo "reviewapp_URL=$($reviewAppURL)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+#$reviewAppURL = "https://$reviewAppPrefixURL-pr-$pullRequestNumber.herokuapp.com"
+#echo "reviewapp_URL=$($reviewAppURL)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
 
 # set a variable with the projected URL for the Secondary(secondary) review App.
-$secondaryReviewAppTargetBranchName = [string]::Format("{0}{1}", $secondaryReviewAppNewBranchPrefix, $pullRequestNumber)
-$secondaryReviewAppURL = "https://$secondaryReviewAppPrefixURL-br-$secondaryReviewAppTargetBranchName.herokuapp.com"
-echo "secondaryReviewapp_URL=$($secondaryReviewAppURL)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+#$secondaryReviewAppTargetBranchName = [string]::Format("{0}{1}", $secondaryReviewAppNewBranchPrefix, $pullRequestNumber)
+#$secondaryReviewAppURL = "https://$secondaryReviewAppPrefixURL-br-$secondaryReviewAppTargetBranchName.herokuapp.com"
+#echo "secondaryReviewapp_URL=$($secondaryReviewAppURL)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
 
-return
 # heroku request header definition
 $herokuRequestHeader = @{
     "Authorization" = "Bearer $herokuApiKey"
@@ -93,7 +91,6 @@ if($reviewAppInstance.count -gt 0){
     Write-Output $reviewAppInstance
     Write-Output "Finishing execution of the primary review app process...."
     Write-Output " DONE "
-    # set a control variable to skip the execution of the subsequent tasks
     return
 }
 Write-Output "Review APP Not Found."
@@ -115,10 +112,6 @@ try{
     Invoke-RestMethod -Uri $uri -Headers $githubRequestHeader -Method Get -OutFile $sourceCodeDownloadPath -Verbose -Debug | Out-Null
     Write-Output "Source Code Found."
     Write-Output "Downloading Path: $sourceCodeDownloadPath"
-
-    # set output variables
-    #echo "##vso[task.setvariable variable=ReviewAppSourceCodeDownloadPath;isOutput=true]$sourceCodeDownloadPath"
-    #echo "##vso[task.setvariable variable=ReviewAppSourceCodeFileName;isOutput=true]$sourceCodeFileName"
 }
 catch{
     $exceptionMessage = $_.Exception.Message
@@ -161,8 +154,8 @@ Write-Output "*************************************************"
 # so far only ensure that the UI_URL configuration is present
 Write-Output "Setting up the default environment variable values for the Primary Review App.."
 $environmentValuesAsObject = [PSCustomObject]@{}
-if(![string]::IsNullOrWhiteSpace($reviewAppEnvironmentValues)){
-    $environmentValuesAsObject = $reviewAppEnvironmentValues | ConvertFrom-Json
+if(![string]::IsNullOrWhiteSpace($environmentValues)){
+    $environmentValuesAsObject = $environmentValues | ConvertFrom-Json
 }
 $environmentValuesAsObject | Add-Member -MemberType NoteProperty -Name 'FRONTEND_URL' -Value $secondaryReviewAppURL  -Force
 $environmentValuesAsObject | Add-Member -MemberType NoteProperty -Name 'APP_URL' -Value $reviewAppURL  -Force
