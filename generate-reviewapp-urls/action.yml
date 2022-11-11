@@ -23,7 +23,7 @@ outputs:
     value: ${{ steps.generate-urls.outputs.reviewapp_URL }}
   secondaryReviewapp_URL:
     description: "The URL of the secondary Review App"
-    value: ${{ steps.generate-urls.secondaryReviewapp_URL }}
+    value: ${{ steps.generate-urls.outputs.secondaryReviewapp_URL }}
 runs:
   using: "composite"
   steps:
