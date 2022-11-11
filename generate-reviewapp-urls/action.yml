@@ -26,7 +26,7 @@ outputs:
     description: "The URL of the primary Review App"
     value: ${{ steps.generate-urls.outputs.reviewapp_URL }}
   secondaryReviewapp_URL:
-    description: "The URL of the primary Review App"
+    description: "The URL of the secondary Review App"
     value: ${{ steps.generate-urls.secondaryReviewapp_URL }}
 runs:
   using: "composite"
@@ -35,9 +35,9 @@ runs:
       run: |
         # primary review app
         $url = ${{format('https://{0}-pr-{1}.herokuapp.com', inputs.reviewapp_prefixURL , inputs.github_pullRequestNumber)}}
-        echo "reviewapp_URL=$url" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+        echo "reviewapp_URL=$url" >> $GITHUB_OUTPUT
 
         # secondary review app
-        $url = ${{format('https://{0}-br-{1}{2}.herokuapp.com', inputs.secondaryReviewapp_URL, inputs.secondaryReviewapp_newBranchPrefix, inputs.github_pullRequestNumber)}}
-        echo "secondaryReviewapp_URL=$url" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
-      shell: powershell
+        $url = ${{format('https://{0}-br-{1}{2}.herokuapp.com', inputs.secondaryReviewapp_prefixURL, inputs.secondaryReviewapp_newBranchPrefix, inputs.github_pullRequestNumber)}}
+        echo "secondaryReviewapp_URL=$url" >> $GITHUB_OUTPUT
+      shell: pwsh
