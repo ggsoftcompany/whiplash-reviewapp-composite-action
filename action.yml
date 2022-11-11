@@ -25,18 +25,47 @@ inputs:
     description: 'The name of the target pipeline in HEROKU'
     required: true
     default: ''
+  reviewapp_prefixURL:
+    description: 'The prefix URL of the primary Review App'
+    required: true
+    default: ''
+  reviewapp_version:
+    description: 'Source code version for the review app. Default to the version number (or SHA) of the code to build.'
+    required: false
+    default: ${{github.sha}}
+  reviewapp_environmentValues:
+    description: 'JSON string with environment values to include in the configuration of the primary Review APP. (Optional)'
+    required: false
+    default: ''
+  secondaryReviewapp_prefixURL:
+    description: 'The prefix URL of the secondary Review App'
+    required: true
+    default: ''
+  secondaryReviewapp_newBranchPrefix:
+    description: 'The prefix to use in the name of the new branch the script will create based on the SecondaryReviewAppGithubSourceBranch. The Secondary Review App will use this new branch as source code.'
+    required: true
+    default: ''
 outputs:
-  random-number:
-    description: "Random number"
-    value: ${{ steps.random-number-generator.outputs.random-number }}
+  reviewapp_URL:
+    description: "The URL of the primary Review App"
+    value: ${{ steps.create-reviewapp.outputs.reviewapp_URL }}
+  secondaryReviewapp_URL:
+    description: "The URL of the primary Review App"
+    value: ${{ steps.create-reviewapp.outputs.secondaryReviewapp_URL }}
 runs:
   using: "composite"
   steps:
-    - run: ${{ github.action_path }}/scripts/primary-reviewapp-creation.ps1 `
+    - id: create-reviewapp
+      run: ${{ github.action_path }}/scripts/primary-reviewapp-creation.ps1 `
               -workingDirectoryPath '${{inputs.workingDirectoryPath}}' `
               -herokuApiKey '${{inputs.heroku_apiKey}}' `
               -herokuPipelineName '${{inputs.heroku_pipelineName}}' `
               -githubAccessToken '${{inputs.github_accessToken}}' `
               -githubRepositoryFullName '${{inputs.github_repository}}' `
-              -githubFullBranchName '${{inputs.github_branchRef}}'
+              -githubFullBranchName '${{inputs.github_branchRef}}' `
+              -sourceCodeVersion '${{inputs.reviewapp_version}}' `
+              -reviewAppPrefixURL '${{inputs.reviewapp_prefixURL}}' `
+              -reviewAppEnvironmentValues '${{inputs.reviewapp_environmentValues}}' `
+              -secondaryReviewAppPrefixURL '${{inputs.secondaryReviewapp_prefixURL}}' `
+              -secondaryReviewAppNewBranchPrefix '${{inputs.secondaryReviewapp_newBranchPrefix}}' `
       shell: powershell
