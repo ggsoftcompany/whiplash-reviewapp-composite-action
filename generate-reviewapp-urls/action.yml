@@ -9,11 +9,11 @@ inputs:
     description: 'Pull request number'
     required: false
     default: ${{github.event.number}}
-  reviewapp_URL:
+  reviewapp_prefixURL:
     description: 'The URL of the primary Review App'
     required: true
     default: ''
-  secondaryReviewapp_URL:
+  secondaryReviewapp_prefixURL:
     description: 'The URL of the secondary Review App'
     required: true
     default: ''
