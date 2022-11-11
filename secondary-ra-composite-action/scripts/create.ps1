@@ -105,15 +105,19 @@ $uri = "$herokuApiBaseURL/pipelines/$herokuPipelineInstanceID/review-apps"
 
 $appReviewList = Invoke-RestMethod -Method Get -Uri $uri -Headers $herokuRequestHeader -Verbose -Debug
 Write-Output "GET Request URL: $uri"
-$reviewAppInstance = $appReviewList.where{$_.branch.trim() -eq $targetBranchName}
-if($reviewAppInstance.count -gt 0){
-    Write-Warning "The pipeline: $herokuPipelineName already have a Review APP based on the branch: $targetBranchName."
-    Write-Output $reviewAppInstance
-    Write-Output "Finishing execution of the secondary review app process...."
-    Write-Output " DONE "
-    return
+$reviewAppInstances = $appReviewList.where{$_.branch.trim() -eq $targetBranchName -or $_.pr_number -eq $pullRequestNumber}
+if($reviewAppInstances.count -gt 0){
+    Write-Warning "The pipeline: $herokuPipelineName has $($reviewAppInstances.count) Review APP based on the branch: $targetBranchName."
+    Write-Output "Preparing to remove all of them..."
+    foreach($instance in $reviewAppInstances){
+        Write-Output "Removing Review App with ID: $($instance.id)..."
+        $uri = "$herokuApiBaseURL/review-apps/$($instance.id)"
+        Invoke-RestMethod -Method Delete -Uri $uri -Headers $herokuRequestHeader -Verbose -Debug
+        Write-Output "DELETE Request URL: $uri"
+        Write-Output "Review App with ID: $($instance.id) was removed."
+    }
 }
-Write-Output "Review APP Not Found."
+
 Write-Output "*************************************************"
 
 # github request header definition
