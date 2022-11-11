@@ -60,13 +60,15 @@ if((git ls-remote --heads origin  $targetBranchName)){
     git push origin --delete $targetBranchName
 }
 
-Write-Output "Branch: '$targetBranchName' Not found. Creating it..."
+Write-Output "Creating branch: '$targetBranchName' ..."
 git checkout -b $targetBranchName -f
 git push origin $targetBranchName
 Write-Output "Branch: '$targetBranchName' Created."
 
 # set variable secondaryReviewAppSourceVersion to the sha of the las commit to the target branch which is the branch we just created
-$secondaryReviewAppSourceVersion = (git rev-parse origen/$targetBranchName)
+$shaResult = @(git rev-parse origen $targetBranchName)
+$shaResult
+$secondaryReviewAppSourceVersion = $shaResult[0]
 
 Write-Output "*************************************************"
 
