@@ -32,12 +32,12 @@ runs:
   using: "composite"
   steps:
     - id: generate-urls
-      run:
+      run: |
         # primary review app
-        $url = ${{format('https://{0}-pr-{1}.herokuapp.com', inputs.reviewapp_prefixURL , inputs.github_pullRequestNumber)}}
-        echo "reviewapp_URL=$url" >> $GITHUB_OUTPUT
+        #$url = ${{format('https://{0}-pr-{1}.herokuapp.com', inputs.reviewapp_prefixURL , inputs.github_pullRequestNumber)}}
+        echo "reviewapp_URL=https://miami.com" >> $GITHUB_OUTPUT
 
         # secondary review app
-        $url = ${{format('https://{0}-br-{1}{2}.herokuapp.com', inputs.secondaryReviewapp_prefixURL, inputs.secondaryReviewapp_newBranchPrefix, inputs.github_pullRequestNumber)}}
-        echo "secondaryReviewapp_URL=$url" >> $GITHUB_OUTPUT
+        #$url = ${{format('https://{0}-br-{1}{2}.herokuapp.com', inputs.secondaryReviewapp_prefixURL, inputs.secondaryReviewapp_newBranchPrefix, inputs.github_pullRequestNumber)}}
+        echo "secondaryReviewapp_URL=https://miami.com" >> $GITHUB_OUTPUT
       shell: pwsh
