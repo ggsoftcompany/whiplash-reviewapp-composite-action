@@ -33,4 +33,5 @@ runs:
             -pullRequestNumber '${{inputs.github_pullRequestNumber}}' `
             -reviewappPrefixURL '${{inputs.reviewapp_prefixURL}}' `
             -secondaryReviewappPrefixURL '${{inputs.secondaryReviewapp_prefixURL}}' `
-            -secondaryReviewappNewBranchPrefix '${{inputs.secondaryReviewapp_newBranchPrefix}}' `
+            -secondaryReviewappNewBranchPrefix '${{inputs.secondaryReviewapp_newBranchPrefix}}'
+
