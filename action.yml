@@ -41,6 +41,14 @@ inputs:
     description: 'JSON string with environment values to include in the configuration of the primary Review APP. (Optional)'
     required: false
     default: ''
+  secondaryHeroku_pipelineName:
+    description: 'The name of the secondary review app target pipeline in HEROKU'
+    required: true
+    default: ''
+  secondaryReviewapp_environmentValues:
+    description: 'JSON string with environment values to include in the configuration of the secondary Review APP. (Optional)'
+    required: false
+    default: ''
   secondaryReviewapp_prefixURL:
     description: 'The prefix URL of the secondary Review App'
     required: true
@@ -82,13 +90,13 @@ runs:
       run: ${{ github.action_path }}/scripts/secondary-reviewapp-creation.ps1 `
               -workingDirectoryPath '${{inputs.workingDirectoryPath}}' `
               -herokuApiKey '${{inputs.heroku_apiKey}}' `
-              -herokuPipelineName '${{inputs.heroku_pipelineName}}' `
+              -herokuPipelineName '${{inputs.secondaryHeroku_pipelineName}}' `
               -githubAccessToken '${{inputs.github_accessToken}}' `
               -githubRepositoryFullName '${{inputs.github_repository}}' `
               -pullRequestNumber '${{inputs.github_pullRequestNumber}}' `
               -primaryReviewAppURL '${{ steps.create-reviewapp.outputs.reviewapp_URL }}' `
               -reviewAppURL '${{ steps.create-reviewapp.outputs.secondaryReviewapp_URL }}' `
-              -environmentValues '${{inputs.reviewapp_environmentValues}}' `
+              -environmentValues '${{inputs.secondaryReviewapp_environmentValues}}' `
               -githubDefaultBranch '${{ inputs.secondaryReviewapp_defaultBranch }}' `
               -githubNewBranchPrefix '${{inputs.secondaryReviewapp_newBranchPrefix}}'
       shell: powershell
