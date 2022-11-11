@@ -17,6 +17,10 @@ inputs:
     description: 'The fully-formed ref of the branch that triggered the workflow run. This is the pull request merge branch. example: refs/pull/<pr_number>/merge'
     required: false
     default: ${{github.ref}}
+  github_pullRequestNumber:
+    description: 'The '
+    required: false
+    default: ${{github.event.number}}
   heroku_apiKey:
     description: 'HEROKU API access token'
     required: true
@@ -45,6 +49,10 @@ inputs:
     description: 'The prefix to use in the name of the new branch the script will create based on the SecondaryReviewAppGithubSourceBranch. The Secondary Review App will use this new branch as source code.'
     required: true
     default: ''
+  secondaryReviewapp_defaultBranch:
+    description: 'The name of the branch to use to create the secondary review app.'
+    required: true
+    default: ''
 outputs:
   reviewapp_URL:
     description: "The URL of the primary Review App"
@@ -68,4 +76,19 @@ runs:
               -reviewAppEnvironmentValues '${{inputs.reviewapp_environmentValues}}' `
               -secondaryReviewAppPrefixURL '${{inputs.secondaryReviewapp_prefixURL}}' `
               -secondaryReviewAppNewBranchPrefix '${{inputs.secondaryReviewapp_newBranchPrefix}}'
+      shell: powershell
+
+    - id: create-secondary-reviewapp
+      run: ${{ github.action_path }}/scripts/secondary-reviewapp-creation.ps1 `
+              -workingDirectoryPath '${{inputs.workingDirectoryPath}}' `
+              -herokuApiKey '${{inputs.heroku_apiKey}}' `
+              -herokuPipelineName '${{inputs.heroku_pipelineName}}' `
+              -githubAccessToken '${{inputs.github_accessToken}}' `
+              -githubRepositoryFullName '${{inputs.github_repository}}' `
+              -pullRequestNumber '${{inputs.github_pullRequestNumber}}' `
+              -primaryReviewAppURL '${{ steps.create-reviewapp.outputs.reviewapp_URL }}' `
+              -reviewAppURL '${{ steps.create-reviewapp.outputs.secondaryReviewapp_URL }}' `
+              -environmentValues '${{inputs.reviewapp_environmentValues}}' `
+              -githubDefaultBranch '${{ inputs.secondaryReviewapp_defaultBranch }}' `
+              -githubNewBranchPrefix '${{inputs.secondaryReviewapp_newBranchPrefix}}'
       shell: powershell

@@ -51,6 +51,7 @@ $secondaryReviewAppTargetBranchName = [string]::Format("{0}{1}", $secondaryRevie
 $secondaryReviewAppURL = "https://$secondaryReviewAppPrefixURL-br-$secondaryReviewAppTargetBranchName.herokuapp.com"
 echo "secondaryReviewapp_URL=$($secondaryReviewAppURL)"
 
+return
 # heroku request header definition
 $herokuRequestHeader = @{
     "Authorization" = "Bearer $herokuApiKey"
