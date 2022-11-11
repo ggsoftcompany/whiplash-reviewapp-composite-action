@@ -39,17 +39,6 @@ Write-Output "====  Beginning - Script of the Primary HEROKU Review APP  ==="
 $herokuApiBaseURL = "https://api.heroku.com"
 $branchName = $githubFullBranchName.Replace("refs/", "").trim()
 
-
-# set a variable with the projected URL for the Primary review App.
-# this variable will be used in post scripts
-#$reviewAppURL = "https://$reviewAppPrefixURL-pr-$pullRequestNumber.herokuapp.com"
-#echo "reviewapp_URL=$($reviewAppURL)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
-
-# set a variable with the projected URL for the Secondary(secondary) review App.
-#$secondaryReviewAppTargetBranchName = [string]::Format("{0}{1}", $secondaryReviewAppNewBranchPrefix, $pullRequestNumber)
-#$secondaryReviewAppURL = "https://$secondaryReviewAppPrefixURL-br-$secondaryReviewAppTargetBranchName.herokuapp.com"
-#echo "secondaryReviewapp_URL=$($secondaryReviewAppURL)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
-
 # heroku request header definition
 $herokuRequestHeader = @{
     "Authorization" = "Bearer $herokuApiKey"
@@ -149,7 +138,6 @@ catch{
 Write-Output "*************************************************"
 
 # lets begin creating the review app
-
 # first lets set up the default values for the environment configuration the review app will use
 # so far only ensure that the UI_URL configuration is present
 Write-Output "Setting up the default environment variable values for the Primary Review App.."
