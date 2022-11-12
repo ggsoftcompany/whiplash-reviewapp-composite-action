@@ -1,7 +1,7 @@
 name: 'Whiplash Heroku Primary Review App Deploy'
 description: 'Composite action to help Whiplash review app deployment. It will deploy the primary Review App.'
 inputs:
-  github-accessToken:
+  github-access-key:
     description: 'Github access token'
     required: true
     default: ''
