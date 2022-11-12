@@ -30,6 +30,7 @@ runs:
   steps:
     - name: Generate review app name
       run: |
+        # Generate review app name
         $appName = "${{inputs.app-name-prefix}}-pr-${{ github.event.number }}"
         echo "APP_NAME=$appName" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         write-output "The name for the review app was generated using the fallowing format: {app-name-prefix}-pr-{pull-request-number}."
@@ -38,6 +39,7 @@ runs:
 
     - name: Generate secondary review app name
       run: |
+        # Generate secondary review app name
         $appName = "${{inputs.secondary-app-name-prefix}}-br-${{github.event.number}}"
         echo "SECONDARY_APP_NAME=$appName" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         write-output "The name for the secondary review app was generated using the fallowing format: {secondary-app-name-prefix}-br-{pull-request-number}."
@@ -45,6 +47,7 @@ runs:
       shell: powershell
 
     - run: |
+        #
         write-output "APP NAME: ${{env.APP_NAME}}"
         write-output "SECONDARY APP NAME:${{env.SECONDARY_APP_NAME}}"
       shell: powershell
