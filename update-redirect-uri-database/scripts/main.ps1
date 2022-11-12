@@ -15,7 +15,7 @@ param (
     [string]$redirectUri,
 
     [Parameter(Mandatory=$false)]
-    [string]$mysqlDriverPath = "C:\Program Files (x86)\MySQL\*\Assemblies\v4.5.2\MySql.Data.dll",
+    [string]$mysqlDriverPath = "C:\Program Files (x86)\MySQL\*\Assemblies\v4.5.2\MySql.Data.dll"
 )
 
 
