@@ -42,6 +42,6 @@ runs:
 
     - run: |
         write-output "APP NAME: ${{env.APP_NAME}}"
-        write-output "SECONDARY APP NAME: $SECONDARY_APP_NAME"
-        write-output "SECONDARY APP TMP BRANCH NAME: $SECONDARY_APP_TMP_BRANCH_NAME"
+        write-output "SECONDARY APP NAME:${{env.SECONDARY_APP_TMP_BRANCH_NAME}}"
+        write-output "SECONDARY APP TMP BRANCH NAME: ${{env.SECONDARY_APP_TMP_BRANCH_NAME}}"
       shell: powershell
