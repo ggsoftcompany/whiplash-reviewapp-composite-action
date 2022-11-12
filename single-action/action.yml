@@ -31,7 +31,7 @@ runs:
     - name: Generate review app name
       run: |
         echo "APP_NAME=${{inputs.app-name-prefix}}-pr-${{ github.event.number }}" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-        write-output "${{env.APP_NAME}}"
+        write-output "APP NAME: $APP_NAME"
       shell: powershell
 
     - name: Generate secondary review app name
@@ -39,6 +39,6 @@ runs:
         $tmpBranchName = "${{inputs.app-name-prefix}}pr-${{ github.event.number }}"
         echo "SECONDARY_APP_TMP_BRANCH_NAME=$tmpBranchName" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         echo "SECONDARY_APP_NAME=${{inputs.secondary-app-name-prefix}}-br-$tmpBranchName" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-        write-output "${{env.SECONDARY_APP_TMP_BRANCH_NAME}}"
-        write-output "${{env.SECONDARY_APP_NAME}}"
+        write-output "SECONDARY APP NAME: $SECONDARY_APP_NAME"
+        write-output "SECONDARY APP TMP BRANCH NAME: $SECONDARY_APP_TMP_BRANCH_NAME"
       shell: powershell
