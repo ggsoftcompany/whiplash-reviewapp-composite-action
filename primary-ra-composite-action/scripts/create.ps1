@@ -84,6 +84,7 @@ if($reviewAppInstances.count -gt 0){
         Invoke-RestMethod -Method Delete -Uri $uri -Headers $herokuRequestHeader -Verbose -Debug
         Write-Output "DELETE Request URL: $uri"
         Write-Output "Review App with ID: $($instance.id) was removed."
+        Write-Output "-----------------------------------"
     }
 }
 Write-Output "*************************************************"

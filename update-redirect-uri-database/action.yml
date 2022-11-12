@@ -1,0 +1,38 @@
+name: 'Whiplash Heroku Review App Update Redirect Uri'
+description: 'Composite action that will connect to the MySQL database and make the updates that are needed to the Redirect uri.'
+inputs:
+  host:
+    description: 'Target MYSQL server'
+    required: true
+    default: ''
+  user:
+    description: 'Username to connect to the server.'
+    required: true
+    default: ''
+  password:
+    description: 'Password to connect to the server.'
+    required: true
+    default: ''
+  dbName:
+    description: 'Target database name.'
+    required: true
+    default: ''
+  redirectUri:
+    description: 'Value of the new redirect URI to be added in the database.'
+    required: true
+    default: ''
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        choco install mysql-connector
+      name: Installing MYSQL connector
+      shell: powershell
+    - run: ${{ github.action_path }}/scripts/main.ps1 `
+            -server '${{inputs.host}}' `
+            -dbUser '${{inputs.user}}' `
+            -dbPassword '${{inputs.password}}' `
+            -dbName '${{inputs.dbName}}' `
+            -redirectUri '${{inputs.redirectUri}}'
+      shell: powershell
+
