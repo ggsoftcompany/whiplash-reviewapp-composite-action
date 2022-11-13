@@ -66,13 +66,17 @@ runs:
     - name: Generate secondary review app name and url
       run: |
         # Generate secondary review app name and url
-        $appName = "${{inputs.secondary-app-name-prefix}}-br-${{github.event.number}}"
+        $tmpBranchName = 'tmp-${{github.event.number}}'
+        $appName = "${{inputs.secondary-app-name-prefix}}-br-$tmpBranchName"
         $url = "https://$appName.herokuapp.com"
+
         echo "SECONDARY_APP_NAME=$appName" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         echo "SECONDARY_APP_URL=$url" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-        write-output "The name for the secondary review app was generated using the fallowing format: {secondary-app-name-prefix}-br-{pull-request-number}."
+        echo "SECONDARY_APP_TMP_BRANCH_NAME=$tmpBranchName" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        write-output "The name for the secondary review app was generated using the fallowing format: {secondary-app-name-prefix}-br-tmp-{pull-request-number}."
         write-output " SECONDARY APP NAME: $appName"
         write-output " SECONDARY APP URL: $url"
+        write-output " SECONDARY APP TMP BRANCH NAME: $tmpBranchName"
       shell: powershell
 
     - name: Create review app
@@ -108,7 +112,7 @@ runs:
         -pullRequestNumber '${{github.event.number}}' `
         -primaryReviewAppURL '${{env.APP_URL}}' `
         -environmentValues '${{inputs.secondary-app-environment-values}}' `
-        -githubNewBranchPrefix '${{inputs.secondary-app-name-prefix}}-br-'
+        -githubNewBranchPrefix 'tmp-'
       shell: powershell
 
     - id: set-outputs
@@ -139,8 +143,8 @@ runs:
         # removing temporary branch was created for secondary review app
         # todo: move this to a separate step. the create secondary app script will need to be refactored to accept
         # target branch name as parameter
-        Write-Output "Verify if exists the branch with name: $targetBranchName ..."
-        $targetBranchName = '${{env.SECONDARY_APP_NAME}}'
+        $targetBranchName = '${{env.SECONDARY_APP_TMP_BRANCH_NAME}}'
+        Write-Output "Verify if exists a branch with name: $targetBranchName ..."
         $repositoryName =  ('${{inputs.secondary-app-repository}}'.split('/'))[1]
         git clone "https://user:${{inputs.github-access-key}}@github.com/${{inputs.secondary-app-repository}}.git"
         cd $repositoryName

@@ -198,7 +198,6 @@ Write-Output "Creating review app..."
 # request body
 $createReviewAppRequestBody = @{
   branch = $targetBranchName
-  pr_number = [int]::Parse($pullRequestNumber)
   pipeline = $herokuPipelineInstanceID
   source_blob = @{
     url = $herokuSourceInstance.source_blob.get_url
