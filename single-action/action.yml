@@ -130,10 +130,13 @@ runs:
                   -appName '${{env.SECONDARY_APP_NAME}}'
 
 
-        $repositoryName =  ('${{inputs.secondary-app-repository}}'.split('/'))[1]
-        git clone -b $githubDefaultBranch "https://user:${{inputs.github-access-key}}@github.com/${{inputs.secondary-app-repository}}.git"
-        cd $repositoryName
         $targetBranchName = '${{env.SECONDARY_APP_NAME}}'
+
+        $repositoryName =  ('${{inputs.secondary-app-repository}}'.split('/'))[1]
+        write-output "https://user:${{inputs.github-access-key}}@github.com/${{inputs.secondary-app-repository}}.git"
+        git clone "https://user:${{inputs.github-access-key}}@github.com/${{inputs.secondary-app-repository}}.git"
+        cd $repositoryName
+
         Write-Output "Verify if exists the branch with name: $targetBranchName ..."
         if((git ls-remote --heads origin  $targetBranchName)){
             Write-Output "Branch: '$targetBranchName' found. Removing it ..."
