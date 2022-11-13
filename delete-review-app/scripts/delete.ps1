@@ -29,7 +29,7 @@ catch{
     write-warning "Review APP Not Found. Please verify that the provided name is correct."
 }
 
-if($reviewAppInstance != $null){
+if($reviewAppInstance -ne $null){
     try{
         Write-Output "Removing the review app..."
         Write-Output "DELETE Request URL: $uri"
