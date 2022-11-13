@@ -184,10 +184,10 @@ $environmentValuesAsObject = [PSCustomObject]@{}
 if(![string]::IsNullOrWhiteSpace($environmentValues)){
     $environmentValuesAsObject = $environmentValues | ConvertFrom-Json
 }
-$environmentValuesAsObject | Add-Member -MemberType NoteProperty -Name 'API_URL' -Value $reviewAppURL  -Force
-$environmentValuesAsObject | Add-Member -MemberType NoteProperty -Name 'BACKEND_URL' -Value $reviewAppURL  -Force
-$environmentValuesAsObject | Add-Member -MemberType NoteProperty -Name 'CORE_URL' -Value $reviewAppURL  -Force
-$environmentValuesAsObject | Add-Member -MemberType NoteProperty -Name 'WHIPLASH_API_URL' -Value $reviewAppURL  -Force
+$environmentValuesAsObject | Add-Member -MemberType NoteProperty -Name 'API_URL' -Value $primaryReviewAppURL  -Force
+$environmentValuesAsObject | Add-Member -MemberType NoteProperty -Name 'BACKEND_URL' -Value $primaryReviewAppURL  -Force
+$environmentValuesAsObject | Add-Member -MemberType NoteProperty -Name 'CORE_URL' -Value $primaryReviewAppURL  -Force
+$environmentValuesAsObject | Add-Member -MemberType NoteProperty -Name 'WHIPLASH_API_URL' -Value $primaryReviewAppURL  -Force
 Write-Output $environmentValuesAsObject
 
 Write-Output "*************************************************"
@@ -225,7 +225,7 @@ catch{
 
 Write-Output "*************************************************"
 
-rite-Output "Pulling details verifying the creation status..."
+Write-Output "Pulling details verifying the creation status..."
 $maxTimeToWaitInSeconds = 1200 # 20 min
 $createdAt = [datetime]::Now
 $reviewAppInstanceID = $reviewAppInstance.id
