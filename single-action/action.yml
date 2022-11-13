@@ -25,6 +25,22 @@ inputs:
     description: 'The prefix used to generate the name of the secondary review app. This should be the same as what you specified for the review app URL pattern in Heroku Dashboard'
     required: true
     default: ''
+  secondary-app-repository:
+    description: 'The full name of the repository where the source code of the secondary app is located.(owner/repo)'
+    required: true
+    default: ''
+  secondary-app-source-branch:
+    description: 'The name of the branch to use to create the secondary review app.'
+    required: true
+    default: ''
+  secondary-app-pipeline-name:
+    description: 'The name of the pipeline to deploy the secondary review app for'
+    required: true
+    default: ''
+  secondary-app-environment-values:
+    description: 'JSON string with environment values to include in the configuration of the secondary review app. (Optional)'
+    required: false
+    default: ''
 runs:
   using: "composite"
   steps:
@@ -78,23 +94,12 @@ runs:
         -herokuPipelineName '${{inputs.secondary-app-pipeline-name}}' `
         -githubAccessToken '${{inputs.github-access-key}}' `
         -githubRepositoryFullName '${{inputs.secondary-app-repository}}' `
-        -githubDefaultBranch '${{inputs.secondary-app-repository}}' `
+        -githubDefaultBranch '${{inputs.secondary-app-source-branch}}' `
         -reviewAppURL '${{ env.SECONDARY_APP_URL }}' `
         -pullRequestNumber '${{github.event.number}}' `
         -primaryReviewAppURL '${{env.APP_URL}}' `
         -environmentValues '${{inputs.secondary-app-environment-values}}' `
         -githubNewBranchPrefix '${{inputs.secondary-app-name-prefix}}-br-'
-
-
-
-
-
-
-
-        -environmentValues '${{inputs.reviewapp_environmentValues}}' `
-        -githubDefaultBranch '${{ inputs.reviewapp_defaultBranch }}' `
-        -githubNewBranchPrefix '${{inputs.reviewapp_newBranchPrefix}}'
-
       shell: powershell
 
     - id: outputs
