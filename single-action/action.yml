@@ -41,6 +41,13 @@ inputs:
     description: 'JSON string with environment values to include in the configuration of the secondary review app. (Optional)'
     required: false
     default: ''
+outputs:
+  app-url:
+    description: "The URL of the primary Review App"
+    value: ${{ steps.set-outputs.outputs.app-url }}
+  secondary-app-url:
+    description: "The URL of the secondary Review App"
+    value: ${{ steps.set-outputs.outputs.secondary-app-url }}
 runs:
   using: "composite"
   steps:
@@ -104,7 +111,7 @@ runs:
         -githubNewBranchPrefix '${{inputs.secondary-app-name-prefix}}-br-'
       shell: powershell
 
-    - id: outputs
+    - id: set-outputs
       name: Set outputs
       run: |
         # Set outputs
