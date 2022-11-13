@@ -81,10 +81,9 @@ if($reviewAppInstances.count -gt 0){
     foreach($instance in $reviewAppInstances){
         Write-Output "Removing Review App with ID: $($instance.id)..."
         $uri = "$herokuApiBaseURL/review-apps/$($instance.id)"
-        Invoke-RestMethod -Method Delete -Uri $uri -Headers $herokuRequestHeader -Verbose -Debug
         Write-Output "DELETE Request URL: $uri"
-        Write-Output "Review App with ID: $($instance.id) was removed."
-        Write-Output "-----------------------------------"
+        Invoke-RestMethod -Method Delete -Uri $uri -Headers $herokuRequestHeader -Verbose -Debug
+        Write-Output "----------------------------------------------------."
     }
     # set up an sleep time.
     sleep -Seconds 30

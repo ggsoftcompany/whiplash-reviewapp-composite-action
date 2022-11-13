@@ -1,0 +1,21 @@
+name: 'Heroku Review App Delete'
+description: 'Composite action to delete a review app.'
+inputs:
+  api-key:
+    description: 'Your Heroku API key'
+    required: true
+    default: ''
+  app-name:
+    description: 'The name of the review app'
+    required: true
+    default: ''
+runs:
+  using: "composite"
+  steps:
+    - name: Delete review app
+      run: |
+        # Delete review app
+        ${{ github.action_path }}/scripts/delete.ps1 `
+                      -herokuApiKey '${{inputs.api-key}}' `
+                      -appName '${{inputs.app-name}}'
+      shell: powershell

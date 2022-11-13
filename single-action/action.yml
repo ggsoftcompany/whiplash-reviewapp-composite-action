@@ -69,6 +69,7 @@ runs:
       shell: powershell
 
     - name: Create review app
+      if: ${{ github.event_name == 'pull_request' && github.event.action != 'closed' }}
       run: |
         # Create review app
         ${{ github.action_path }}/../primary-ra-composite-action/scripts/create.ps1 `
@@ -86,6 +87,7 @@ runs:
       shell: powershell
 
     - name: Create secondary review app
+      if: ${{ github.event_name == 'pull_request' && github.event.action != 'closed' }}
       run: |
         # Create secondary review app
         ${{ github.action_path }}/../secondary-ra-composite-action/scripts/create.ps1 `
@@ -108,4 +110,33 @@ runs:
         # Set outputs
         echo "app-url=${{env.APP_URL}}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
         echo "secondary-app-url=${{env.SECONDARY_APP_URL}}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+      shell: powershell
+
+    - name: Delete primary review App
+      if: ${{ github.event_name == 'pull_request' && github.event.action == 'closed' }}
+      run: |
+        # Delete primary review App
+        ${{ github.action_path }}/../delete-review-app/scripts/delete.ps1 `
+                  -herokuApiKey '${{inputs.api-key}}' `
+                  -appName '${{env.APP_NAME}}'
+      shell: powershell
+
+    - name: Delete secondary review App
+      if: ${{ github.event_name == 'pull_request' && github.event.action == 'closed' }}
+      run: |
+        # Delete secondary review App
+        ${{ github.action_path }}/../delete-review-app/scripts/delete.ps1 `
+                  -herokuApiKey '${{inputs.api-key}}' `
+                  -appName '${{env.SECONDARY_APP_NAME}}'
+
+        $targetBranchName = '${{env.SECONDARY_APP_NAME}}'
+        Write-Output "Verify if exists the branch with name: $targetBranchName ..."
+        if((git ls-remote --heads origin  $targetBranchName)){
+            Write-Output "Branch: '$targetBranchName' found. Removing it ..."
+            git push origin --delete $targetBranchName
+            Write-Output "Branch: '$targetBranchName' removed."
+        }
+        else{
+          Write-Output "Branch: '$targetBranchName' not found. No action needed."
+        }
       shell: powershell

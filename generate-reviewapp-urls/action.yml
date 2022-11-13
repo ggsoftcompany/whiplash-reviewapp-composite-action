@@ -29,7 +29,7 @@ runs:
   steps:
     - id: generate-urls
       shell: powershell
-      run: ${{ github.action_path }}/scripts/main.ps1 `
+      run: ${{ github.action_path }}/scripts/delete.ps1 `
             -pullRequestNumber '${{inputs.github_pullRequestNumber}}' `
             -reviewappPrefixURL '${{inputs.reviewapp_prefixURL}}' `
             -secondaryReviewappPrefixURL '${{inputs.secondaryReviewapp_prefixURL}}' `

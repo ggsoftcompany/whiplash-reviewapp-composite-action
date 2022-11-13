@@ -28,7 +28,7 @@ runs:
         choco install mysql-connector
       name: Installing MYSQL connector
       shell: powershell
-    - run: ${{ github.action_path }}/scripts/main.ps1 `
+    - run: ${{ github.action_path }}/scripts/delete.ps1 `
             -server '${{inputs.host}}' `
             -dbUser '${{inputs.user}}' `
             -dbPassword '${{inputs.password}}' `
