@@ -41,6 +41,22 @@ inputs:
     description: 'JSON string with environment values to include in the configuration of the secondary review app. (Optional)'
     required: false
     default: ''
+  mysql-servername:
+    description: 'MysSql server name.'
+    required: true
+    default: ''
+  mysql-dbname:
+    description: 'MysSql database name.'
+    required: true
+    default: ''
+  mysql-username:
+    description: 'MysSql username.'
+    required: true
+    default: ''
+  mysql-password:
+    description: 'MysSql password.'
+    required: true
+    default: ''
 outputs:
   app-url:
     description: "The URL of the primary Review App"
@@ -61,6 +77,7 @@ runs:
         write-output "The name for the review app was generated using the fallowing format: {app-name-prefix}-pr-{pull-request-number}."
         write-output " APP NAME: $appName"
         write-output " APP URL: $url"
+
       shell: powershell
 
     - name: Generate secondary review app name and url
@@ -77,6 +94,7 @@ runs:
         write-output " SECONDARY APP NAME: $appName"
         write-output " SECONDARY APP URL: $url"
         write-output " SECONDARY APP TMP BRANCH NAME: $tmpBranchName"
+
       shell: powershell
 
     - name: Create review app
@@ -95,6 +113,7 @@ runs:
         -reviewAppURL '${{env.APP_URL}}' `
         -environmentValues '${{inputs.app-environment-values}}' `
         -secondaryReviewAppURL '${{env.SECONDARY_APP_URL}}'
+
       shell: powershell
 
     - name: Create secondary review app
@@ -113,6 +132,20 @@ runs:
         -primaryReviewAppURL '${{env.APP_URL}}' `
         -environmentValues '${{inputs.secondary-app-environment-values}}' `
         -githubNewBranchPrefix 'tmp-'
+
+      shell: powershell
+
+    - name: Add SECONDARY_APP_URL to the list of redirect uri. MySql database
+      if: ${{ github.event_name == 'pull_request' && github.event.action != 'closed' }}
+      run: |
+        # Add SECONDARY_APP_URL to the list of redirect uri. MySql database
+        ${{ github.action_path }}/../update-redirect-uri-database/scripts/main.ps1 `
+        -server '${{inputs.mysql-servername}}' `
+        -dbUser '${{inputs.mysql-username}}' `
+        -dbPassword '${{inputs.mysql-password}}' `
+        -dbName '${{inputs.mysql-dbname}}' `
+        -redirectUri '${{env.SECONDARY_APP_URL}}'
+
       shell: powershell
 
     - id: set-outputs
@@ -121,6 +154,7 @@ runs:
         # Set outputs
         echo "app-url=${{env.APP_URL}}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
         echo "secondary-app-url=${{env.SECONDARY_APP_URL}}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
       shell: powershell
 
     - name: Delete primary review App
@@ -130,6 +164,7 @@ runs:
         ${{ github.action_path }}/../delete-review-app/scripts/delete.ps1 `
                   -herokuApiKey '${{inputs.api-key}}' `
                   -appName '${{env.APP_NAME}}'
+
       shell: powershell
 
     - name: Delete secondary review App and dependencies
@@ -156,4 +191,5 @@ runs:
         else{
           Write-Output "Branch: '$targetBranchName' not found. No action needed."
         }
+
       shell: powershell
