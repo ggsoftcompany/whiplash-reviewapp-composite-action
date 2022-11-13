@@ -105,7 +105,7 @@ $uri = "$herokuApiBaseURL/pipelines/$herokuPipelineInstanceID/review-apps"
 
 $appReviewList = Invoke-RestMethod -Method Get -Uri $uri -Headers $herokuRequestHeader -Verbose -Debug
 Write-Output "GET Request URL: $uri"
-$reviewAppInstances = $appReviewList.where{$_.branch.trim() -eq $targetBranchName -or $_.pr_number -eq $pullRequestNumber}
+$reviewAppInstances = $appReviewList.where{$_.branch.trim() -eq $targetBranchName}
 if($reviewAppInstances.count -gt 0){
     Write-Warning "The pipeline: $herokuPipelineName has $($reviewAppInstances.count) Review APP based on the branch: $targetBranchName."
     Write-Output "Preparing to remove all of them..."
@@ -116,7 +116,9 @@ if($reviewAppInstances.count -gt 0){
         Invoke-RestMethod -Method Delete -Uri $uri -Headers $herokuRequestHeader -Verbose -Debug
         Write-Output "----------------------------------------------------."
     }
-     Write-Output "All review apps were removed."
+    # set up an sleep time.
+    sleep -Seconds 30
+    Write-Output "All review apps were removed."
 }
 else{
     Write-Output "Review APP Not Found."
