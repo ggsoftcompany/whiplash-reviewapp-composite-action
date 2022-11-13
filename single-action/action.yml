@@ -28,26 +28,49 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Generate review app name
+    - name: Generate review app name and url
       run: |
-        # Generate review app name
+        # Generate review app name and url
         $appName = "${{inputs.app-name-prefix}}-pr-${{ github.event.number }}"
+        $url = "https://$appName.herokuapp.com"
         echo "APP_NAME=$appName" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        echo "APP_URL=$url" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         write-output "The name for the review app was generated using the fallowing format: {app-name-prefix}-pr-{pull-request-number}."
         write-output " APP NAME: $appName"
+        write-output " APP URL: $url"
       shell: powershell
 
-    - name: Generate secondary review app name
+    - name: Generate secondary review app name and url
       run: |
-        # Generate secondary review app name
+        # Generate secondary review app name and url
         $appName = "${{inputs.secondary-app-name-prefix}}-br-${{github.event.number}}"
+        $url = "https://$appName.herokuapp.com"
         echo "SECONDARY_APP_NAME=$appName" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        echo "SECONDARY_APP_URL=$url" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         write-output "The name for the secondary review app was generated using the fallowing format: {secondary-app-name-prefix}-br-{pull-request-number}."
         write-output " SECONDARY APP NAME: $appName"
+        write-output " SECONDARY APP URL: $url"
       shell: powershell
 
-    - run: |
-        #
-        write-output "APP NAME: ${{env.APP_NAME}}"
-        write-output "SECONDARY APP NAME:${{env.SECONDARY_APP_NAME}}"
+    - name: Create
+      run: ${{ github.action_path }}/scripts/create.ps1 `
+        -workingDirectoryPath '${{github.workspace}}' `
+        -herokuApiKey '${{inputs.api-key}}' `
+        -herokuPipelineName '${{inputs.pipeline-name}}' `
+        -githubAccessToken '${{inputs.github-access-key}}' `
+        -githubRepositoryFullName '${{github.repository}}' `
+        -githubFullBranchName '${{github.ref}}' `
+        -pullRequestNumber '${{github.event.number}}' `
+        -sourceCodeVersion '${{github.sha}}' `
+        -reviewAppURL '${{env.APP_URL}}' `
+        -environmentValues '${{inputs.app-environment-values}}' `
+        -secondaryReviewAppURL '${{end.SECONDARY_APP_URL}}'
+      shell: powershell
+
+    - id: outputs
+      name: Set outputs
+      run: |
+        # Set outputs
+        echo "app-url=${{env.APP_URL}}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+        echo "secondary-app-url=${{env.SECONDARY_APP_URL}}" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
       shell: powershell
