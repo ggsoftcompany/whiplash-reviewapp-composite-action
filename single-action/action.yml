@@ -52,12 +52,6 @@ runs:
         write-output " SECONDARY APP URL: $url"
       shell: powershell
 
-    - name: test
-      shell: powershell
-      run: |
-        # test
-        tar -czvf source.tar.gz *
-
     - name: Create review app
       run: |
         # Create review app
@@ -73,6 +67,34 @@ runs:
         -reviewAppURL '${{env.APP_URL}}' `
         -environmentValues '${{inputs.app-environment-values}}' `
         -secondaryReviewAppURL '${{env.SECONDARY_APP_URL}}'
+      shell: powershell
+
+    - name: Create secondary review app
+      run: |
+        # Create secondary review app
+        ${{ github.action_path }}/../secondary-ra-composite-action/scripts/create.ps1 `
+        -workingDirectoryPath '${{github.workspace}}' `
+        -herokuApiKey '${{inputs.api-key}}' `
+        -herokuPipelineName '${{inputs.secondary-app-pipeline-name}}' `
+        -githubAccessToken '${{inputs.github-access-key}}' `
+        -githubRepositoryFullName '${{inputs.secondary-app-repository}}' `
+        -githubDefaultBranch '${{inputs.secondary-app-repository}}' `
+        -reviewAppURL '${{ env.SECONDARY_APP_URL }}' `
+        -pullRequestNumber '${{github.event.number}}' `
+        -primaryReviewAppURL '${{env.APP_URL}}' `
+        -environmentValues '${{inputs.secondary-app-environment-values}}' `
+        -githubNewBranchPrefix '${{inputs.secondary-app-name-prefix}}-br-'
+
+
+
+
+
+
+
+        -environmentValues '${{inputs.reviewapp_environmentValues}}' `
+        -githubDefaultBranch '${{ inputs.reviewapp_defaultBranch }}' `
+        -githubNewBranchPrefix '${{inputs.reviewapp_newBranchPrefix}}'
+
       shell: powershell
 
     - id: outputs
