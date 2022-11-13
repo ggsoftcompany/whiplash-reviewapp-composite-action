@@ -87,6 +87,9 @@ if($reviewAppInstances.count -gt 0){
         Write-Output "-----------------------------------"
     }
 }
+else{
+    Write-Output "Review APP Not Found."
+}
 Write-Output "*************************************************"
 
 # github request header definition
@@ -155,7 +158,7 @@ Write-Output $environmentValuesAsObject
 
 Write-Output "*************************************************"
 
-Write-Output "Creating the Primary Review APP..."
+Write-Output "Creating review app..."
 # request body
 $createReviewAppRequestBody = @{
   branch = $branchName
@@ -189,7 +192,7 @@ catch{
 
 Write-Output "*************************************************"
 
-Write-Output "Pulling Review APP verifying the creation status..."
+Write-Output "Pulling details verifying the creation status..."
 $maxTimeToWaitInSeconds = 1200 # 20 min
 $createdAt = [datetime]::Now
 $reviewAppInstanceID = $reviewAppInstance.id
@@ -210,21 +213,21 @@ Write-Output "*************************************************"
 $completedWithError = $true
 if($reviewAppInstance.status -eq "created"){
     $completedWithError = $false
-    Write-Output "Primary Review APP was created successfully."
+    Write-Output "Review APP was created successfully."
     Write-Output "URL: $reviewAppURL"
 }
 elseif($reviewAppInstance.status -eq "errored"){
-    Write-Warning "Primary Review APP was not created."
+    Write-Warning "Review APP was not created."
 }
 else{
-    Write-Warning "OPS!. The Primary Review APP is taking too long to be created. Process will completed without know if it was created or not. Please contact your admins to see details."
+    Write-Warning "OPS!. The Review APP is taking too long to be created. Process will completed without know if it was created or not. Please contact your admins to see details."
 }
 
 Write-Output "Review APP details: "
 Write-Output $reviewAppInstance | ConvertTo-Json -Depth 10
 
 if($completedWithError){
-     throw("Unexpected Error while creating the Primary HEROKU Review APP.")
+     throw("Unexpected Error while creating the HEROKU Review APP.")
 }
 
 Write-Output "*************************************************"

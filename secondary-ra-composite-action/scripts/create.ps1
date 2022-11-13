@@ -64,9 +64,9 @@ Write-Output "Creating branch: '$targetBranchName' ..."
 git checkout -b $targetBranchName -f
 git push origin $targetBranchName
 Write-Output "Branch: '$targetBranchName' Created."
-# set variable secondaryReviewAppSourceVersion to the sha of the las commit to the target branch which is the branch we just created
-$secondaryReviewAppSourceVersion = @(git rev-parse origin $targetBranchName)
-Write-Output "*************************************************"
+# set variable sourceVersion to the sha of the las commit to the target branch which is the branch we just created
+$sourceCodeVersion = @(git rev-parse origin $targetBranchName)
+Write-Output "**************```***********************************"
 
 # heroku request header definition
 $herokuRequestHeader = @{
@@ -118,6 +118,9 @@ if($reviewAppInstances.count -gt 0){
         Write-Output "----------------------------."
     }
 }
+else{
+    Write-Output "Review APP Not Found."
+}
 
 Write-Output "*************************************************"
 
@@ -149,6 +152,118 @@ catch{
 }
 Write-Output "*************************************************"
 
+# uploading the source code into a heroku source(HEROKU source will provide an url of the code that we can use to create the review app later).
+Write-Output "Creating a source instance in HEROKU..."
+$uri = "$herokuApiBaseURL/sources"
+Write-Output "POST Request URL: $uri"
+$herokuSourceInstance = Invoke-RestMethod -Method Post -Uri $uri -Headers $herokuRequestHeader -Verbose -Debug
+Write-Output "HEROKU source instance created."
+$herokuSourceInstance
+
+Write-Output "Uploading the source code into the HEROKU source instance..."
+$uri = $herokuSourceInstance.source_blob.put_url
+Write-Output "PUT Request URL: $uri"
+try{
+    Invoke-RestMethod -Method Put -Uri $uri -InFile $sourceCodeDownloadPath -Verbose -Debug
+    Write-Output "Uploading completed."
+}
+catch{
+    Write-Output "Unexpected Error uploading the source code into HEROKU."
+    Write-Output "Error details: "
+    Write-Output $_.Exception.Message
+    Write-Output $_.ErrorDetails
+    throw $_
+}
+Write-Output "*************************************************"
+
+# lets begin creating the review app
+# first lets set up the default values for the environment configuration the review app will use
+# so far only ensure that the BACKEND_URL configuration is present
+Write-Output "Setting up the default environment variable values for the Primary Review App.."
+$environmentValuesAsObject = [PSCustomObject]@{}
+if(![string]::IsNullOrWhiteSpace($environmentValues)){
+    $environmentValuesAsObject = $environmentValues | ConvertFrom-Json
+}
+$environmentValuesAsObject | Add-Member -MemberType NoteProperty -Name 'API_URL' -Value $reviewAppURL  -Force
+$environmentValuesAsObject | Add-Member -MemberType NoteProperty -Name 'BACKEND_URL' -Value $reviewAppURL  -Force
+$environmentValuesAsObject | Add-Member -MemberType NoteProperty -Name 'CORE_URL' -Value $reviewAppURL  -Force
+$environmentValuesAsObject | Add-Member -MemberType NoteProperty -Name 'WHIPLASH_API_URL' -Value $reviewAppURL  -Force
+Write-Output $environmentValuesAsObject
+
+Write-Output "*************************************************"
+
+Write-Output "Creating review app..."
+# request body
+$createReviewAppRequestBody = @{
+  branch = $targetBranchName
+  pipeline = $herokuPipelineInstanceID
+  source_blob = @{
+    url = $herokuSourceInstance.source_blob.get_url
+    version = $sourceCodeVersion
+  }
+  environment = $environmentValuesAsObject
+}
+
+$createReviewAppRequestBody = $createReviewAppRequestBody| ConvertTo-Json -Depth 10
+$uri = "$herokuApiBaseURL/review-apps"
+$reviewAppInstance = $null
+try{
+    Write-Output "POST Request URL: $uri"
+    Write-Output "POST Request Body: "
+    Write-Output $createReviewAppRequestBody
+    $reviewAppInstance = Invoke-RestMethod -Method Post -Uri $uri -Headers $herokuRequestHeader -Body $createReviewAppRequestBody -Verbose -Debug
+    Write-Output "Review APP creation details: "
+    Write-Output $reviewAppInstance | ConvertTo-Json -Depth 10
+}
+catch{
+    Write-Output "Unexpected Error while creating the Primary HEROKU Review APP."
+    Write-Output "Error details: "
+    Write-Output $_.Exception.Message
+    Write-Output $_.ErrorDetails
+    throw $_
+}
+
+Write-Output "*************************************************"
+
+rite-Output "Pulling details verifying the creation status..."
+$maxTimeToWaitInSeconds = 1200 # 20 min
+$createdAt = [datetime]::Now
+$reviewAppInstanceID = $reviewAppInstance.id
+$uri = "$herokuApiBaseURL/review-apps/$reviewAppInstanceID"
+while(@("created", "errored") -inotcontains $reviewAppInstance.status -and  ([datetime]::Now - $createdAt).TotalSeconds -lt $maxTimeToWaitInSeconds){
+    $reviewAppInstanceStatus = $reviewAppInstance.status
+    Write-Output "Review APP status: $reviewAppInstanceStatus"
+    sleep -Seconds 10
+    try{
+        # pull review app data to check the status
+        $reviewAppInstance = Invoke-RestMethod -Method Get -Uri $uri  -Headers $herokuRequestHeader -Verbose -Debug
+    }
+    catch{
+
+    }
+}
+Write-Output "*************************************************"
+$completedWithError = $true
+if($reviewAppInstance.status -eq "created"){
+    $completedWithError = $false
+    Write-Output "Review APP was created successfully."
+    Write-Output "URL: $reviewAppURL"
+}
+elseif($reviewAppInstance.status -eq "errored"){
+    Write-Warning "Review APP was not created."
+}
+else{
+    Write-Warning "OPS!. The Review APP is taking too long to be created. Process will completed without know if it was created or not. Please contact your admins to see details."
+}
+
+Write-Output "Review APP details: "
+Write-Output $reviewAppInstance | ConvertTo-Json -Depth 10
+
+if($completedWithError){
+     throw("Unexpected Error while creating the HEROKU Review APP.")
+}
+
+Write-Output "*************************************************"
 
 Write-Output "====  END - Script of the Secondary HEROKU Review APP ==="
 
