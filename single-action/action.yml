@@ -64,7 +64,7 @@ runs:
         -sourceCodeVersion '${{github.sha}}' `
         -reviewAppURL '${{env.APP_URL}}' `
         -environmentValues '${{inputs.app-environment-values}}' `
-        -secondaryReviewAppURL '${{end.SECONDARY_APP_URL}}'
+        -secondaryReviewAppURL '${{env.SECONDARY_APP_URL}}'
       shell: powershell
 
     - id: outputs
