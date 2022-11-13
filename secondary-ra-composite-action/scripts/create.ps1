@@ -65,7 +65,7 @@ git checkout -b $targetBranchName -f
 git push origin $targetBranchName
 Write-Output "Branch: '$targetBranchName' Created."
 # set variable sourceVersion to the sha of the las commit to the target branch which is the branch we just created
-$sourceCodeVersion = @(git rev-parse origin $targetBranchName)
+$sourceCodeVersion = @(git rev-parse origin $targetBranchName)[0]
 Write-Output "**************```***********************************"
 
 # heroku request header definition
@@ -98,7 +98,7 @@ catch{
 Write-Output "*************************************************"
 
 
-# verify if exists already a review app related with the $targetBranchName
+# verify if exists already a review app
 Write-Output "Verify if exists already a review app based on the branch '$targetBranchName' ..."
 $herokuPipelineInstanceID = $herokuPipelineInstance.id
 $uri = "$herokuApiBaseURL/pipelines/$herokuPipelineInstanceID/review-apps"
@@ -112,11 +112,11 @@ if($reviewAppInstances.count -gt 0){
     foreach($instance in $reviewAppInstances){
         Write-Output "Removing Review App with ID: $($instance.id)..."
         $uri = "$herokuApiBaseURL/review-apps/$($instance.id)"
-        Invoke-RestMethod -Method Delete -Uri $uri -Headers $herokuRequestHeader -Verbose -Debug
         Write-Output "DELETE Request URL: $uri"
-        Write-Output "Review App with ID: $($instance.id) was removed."
-        Write-Output "----------------------------."
+        Invoke-RestMethod -Method Delete -Uri $uri -Headers $herokuRequestHeader -Verbose -Debug
+        Write-Output "----------------------------------------------------."
     }
+     Write-Output "All review apps were removed."
 }
 else{
     Write-Output "Review APP Not Found."
