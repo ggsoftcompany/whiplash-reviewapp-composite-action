@@ -52,8 +52,16 @@ runs:
         write-output " SECONDARY APP URL: $url"
       shell: powershell
 
-    - name: Create
-      run: ${{ github.action_path }}/../primary-ra-composite-action/scripts/create.ps1 `
+    - name: test
+      shell: powershell
+      run: |
+        # test
+        tar -czvf source.tar.gz *
+
+    - name: Create review app
+      run: |
+        # Create review app
+        ${{ github.action_path }}/../primary-ra-composite-action/scripts/create.ps1 `
         -workingDirectoryPath '${{github.workspace}}' `
         -herokuApiKey '${{inputs.api-key}}' `
         -herokuPipelineName '${{inputs.pipeline-name}}' `
