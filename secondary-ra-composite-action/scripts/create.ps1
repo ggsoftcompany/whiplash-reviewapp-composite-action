@@ -66,7 +66,7 @@ git push origin $targetBranchName
 Write-Output "Branch: '$targetBranchName' Created."
 # set variable sourceVersion to the sha of the las commit to the target branch which is the branch we just created
 $sourceCodeVersion = @(git rev-parse origin $targetBranchName)[0]
-Write-Output "**************```***********************************"
+Write-Output "*************************************************"
 
 # heroku request header definition
 $herokuRequestHeader = @{

@@ -121,23 +121,22 @@ runs:
                   -appName '${{env.APP_NAME}}'
       shell: powershell
 
-    - name: Delete secondary review App
+    - name: Delete secondary review App and dependencies
       if: ${{ github.event_name == 'pull_request' && github.event.action == 'closed' }}
       run: |
-        # Delete secondary review App
+        # Delete secondary review and dependencies
         ${{ github.action_path }}/../delete-review-app/scripts/delete.ps1 `
                   -herokuApiKey '${{inputs.api-key}}' `
                   -appName '${{env.SECONDARY_APP_NAME}}'
 
-
+        # removing temporary branch was created for secondary review app
+        # todo: move this to a separate step. the create secondary app script will need to be refactored to accept
+        # target branch name as parameter
+        Write-Output "Verify if exists the branch with name: $targetBranchName ..."
         $targetBranchName = '${{env.SECONDARY_APP_NAME}}'
-
         $repositoryName =  ('${{inputs.secondary-app-repository}}'.split('/'))[1]
-        write-output "https://user:${{inputs.github-access-key}}@github.com/${{inputs.secondary-app-repository}}.git"
         git clone "https://user:${{inputs.github-access-key}}@github.com/${{inputs.secondary-app-repository}}.git"
         cd $repositoryName
-
-        Write-Output "Verify if exists the branch with name: $targetBranchName ..."
         if((git ls-remote --heads origin  $targetBranchName)){
             Write-Output "Branch: '$targetBranchName' found. Removing it ..."
             git push origin --delete $targetBranchName
