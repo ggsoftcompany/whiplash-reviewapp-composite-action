@@ -53,7 +53,7 @@ runs:
       shell: powershell
 
     - name: Create
-      run: ${{ github.action_path }}../primary-ra-composite-action/scripts/create.ps1 `
+      run: ${{ github.action_path }}/../primary-ra-composite-action/scripts/create.ps1 `
         -workingDirectoryPath '${{github.workspace}}' `
         -herokuApiKey '${{inputs.api-key}}' `
         -herokuPipelineName '${{inputs.pipeline-name}}' `
